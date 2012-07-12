@@ -95,4 +95,16 @@ FeedbackStore.prototype.saveImage = function(filename, filepath, callback) {
 
 };
 
+FeedbackStore.prototype.readImage = function (id, callback){
+	var gridStoreRead = new GridStore(this.db, new ObjectID(id) ,"r");
+	gridStoreRead.open(function(err,gridStoreRead){
+		console.log("gridstoreread error"+err);
+		var stream=gridStoreRead.stream(true);
+		callback(null, stream);
+	});
+	
+};
+
+
+
 exports.FeedbackStore = FeedbackStore;

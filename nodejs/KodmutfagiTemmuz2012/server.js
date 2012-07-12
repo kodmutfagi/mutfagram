@@ -76,6 +76,7 @@ app.post('/upload', function(req, res, next) {
 });
 
 app.get('/feedbacks', function(req, res) {
+	
 
 	feedbackStore.findAll(function(errf, feedbacks) {
 		if (errf){
@@ -86,6 +87,21 @@ app.get('/feedbacks', function(req, res) {
 	});
 
 });
+
+app.get('/images/:id', function(req,res){
+	var id=req.params.id;
+	feedbackStore.readImage(id, function(err,stream){
+		res.contentType("image/jpg");
+		res.writeHead(200);
+		stream.pipe(res);
+		
+	
+	});
+});
+
+
+	
+
 
 app.listen(process.env.PORT || 8080);
 console.log("Serving at http://localhost:%s/", process.env.PORT || 8080);
