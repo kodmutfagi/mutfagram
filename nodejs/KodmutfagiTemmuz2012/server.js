@@ -41,14 +41,14 @@ app.get('/', function(req, res) {
 });
 
 var feedbackStore = new FeedbackStore('localhost', 27017);
-app.post('/upload', function(req, res, next) {
+app.post('/upload', function(req, res) {
 	console.log('\n Form post data (%s))', JSON.stringify(req.body));
 	console.log('\n Form param data (%s))', JSON.stringify(req.params));
 
 	var write = function(fname,fpath, fdata) {
 
 		fs.writeFile(fpath, fdata, function(err) {
-			console.log("Error Writing " + err);
+			
 			feedbackStore.saveImage(fname, fpath,
 					function(errf, doc) {
 
