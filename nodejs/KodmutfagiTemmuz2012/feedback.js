@@ -105,6 +105,15 @@ FeedbackStore.prototype.readImage = function (id, callback){
 	
 };
 
+FeedbackStore.prototype.saveImageBuffer = function(buffer, callback) {
+
+	var gridStoreWrite = new GridStore(this.db, new ObjectID(),  "w", {
+		"chunk_size" : 1024*4
+	});
+	gridStoreWrite.write(buffer, callback);
+
+};
+
 
 
 exports.FeedbackStore = FeedbackStore;
