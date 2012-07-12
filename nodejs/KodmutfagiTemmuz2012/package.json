@@ -1,0 +1,12 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "latest",
+    "stylus": "latest",
+    "jade": "latest",
+    "mongodb": "latest"
+    
+  }
+}

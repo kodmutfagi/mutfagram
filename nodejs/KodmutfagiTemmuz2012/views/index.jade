@@ -1,0 +1,12 @@
+h1= title
+#people
+	- each pers in people
+		div.message
+			div.name
+				div.body= pers.name
+						
+form(action="/upload", method="post", enctype="multipart/form-data")
+	p
+		p.body = "File"
+		input(type="file", name="displayImage")
+	input(type="submit", name="Submit")
