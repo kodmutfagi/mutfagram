@@ -42,24 +42,49 @@ app.get('/', function(req, res) {
 
 var feedbackStore = new FeedbackStore('localhost', 27017);
 app.post('/upload', function(req, res, next) {
-	console.log('\nuploaded %s (%d Kb) to %s as %s',
-					req.files.displayImage.name,
-					req.files.displayImage.size / 1024 | 0,
-					req.files.displayImage.path);
-	fs.readFile(req.files.displayImage.path, function(err, data) {
+	console.log('\nuploaded %s (%d Kb) to %s as %s', req.files.foto.name, req.files.foto.size / 1024 | 0, req.files.foto.path);
+	console.log('\n Form data (%s %s %s)', req.body.yorum, req.body.lon, req.body.lat);
+
+	fs.readFile(req.files.foto.path, function(err, data) {
 		console.log("READING FILE %s ", err);
-		var newPath = __dirname + "/uploads/" + req.files.displayImage.name;
+		var newPath = __dirname + "/uploads/" + req.files.foto.name;
 		console.log("Writing " + newPath);
 		fs.writeFile(newPath, data, function(err) {
 			console.log("Error Writing " + err);
-			feedbackStore.saveImage(req.files.displayImage.name, req.files.displayImage.path, 
-					function(errf,doc){
-						console.log("GridFS Writing %s %s " + doc._id, doc.filename);
-					}
-			);
+			feedbackStore.saveImage(req.files.foto.name, req.files.foto.path, function(errf, doc) {
+
+				var feedback = {
+					comments : [ {
+						comment : req.body.yorum
+					} ],
+					location : {
+						lon : req.body.lon,
+						lat : req.body.lat
+					},
+					photo : doc._id
+				};
+				feedbackStore.save(feedback, function(errf, feedbacks) {
+					if (errf)
+						console.log("Failed to save feedback" + errf);
+				});
+
+				console.log("GridFS Writing %s %s " + doc._id, doc.filename);
+			});
 			res.redirect("back");
 		});
 	});
+});
+
+app.get('/feedbacks', function(req, res) {
+
+	feedbackStore.findAll(function(errf, feedbacks) {
+		if (errf){
+			console.log("Failed to save feedback" + errf);
+			res.send(JSON.stringify({meta: {errorCode: 1, errorMessage: errf}}));
+		}
+		res.send(JSON.stringify({ meta: {errorCode: 0}, response: feedbacks }));
+	});
+
 });
 
 app.listen(process.env.PORT || 8080);

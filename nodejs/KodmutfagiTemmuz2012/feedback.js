@@ -74,7 +74,8 @@ FeedbackStore.prototype.save = function(feedbacks, callback) {
 				if (feedback.comments === undefined)
 					feedbacks.comments = [];
 				for ( var j = 0; j < feedback.comments.length; j++) {
-					feedback.comments[j].created_at = new Date();
+					if (feedback.comments[j].created_at === undefined)
+						feedback.comments[j].created_at = new Date();
 				}
 			}
 
