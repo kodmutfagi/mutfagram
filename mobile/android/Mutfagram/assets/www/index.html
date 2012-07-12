@@ -1,13 +1,13 @@
 ﻿<!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="utf-8">
-    <title>Mutfagram</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-<script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
-        <script type="text/javascript" charset="utf-8">
+<head>
+<meta charset="utf-8">
+<title>Mutfagram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<script type="text/javascript" charset="utf-8" src="cordova-1.8.1.js"></script>
+<script type="text/javascript" charset="utf-8">
             
             var pictureSource;   // picture source
             var destinationType; // sets the format of returned value 
@@ -42,159 +42,244 @@
             // Called when a photo is successfully retrieved
             //
             function onPhotoDataSuccess(imageData) {
-                
-                photo = "data:image/jpeg;base64," + imageData;
+                var image = document.getElementById('picCaptured');
+
+                photo = imageData;
+                image.src = "data:image/jpeg;base64," +photo;
+                image.style.display = "block";
+                console.log(photo);
             }
             
             // A button will call this function
             //
             function capturePhoto() {
                 // Take picture using device camera and retrieve image as base64-encoded string
-                navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 40 });
+                navigator.camera.getPicture(onPhotoDataSuccess, onFail, { destinationType: Camera.DestinationType.DATA_URL, quality: 40 });
             }
             
             // Called if something bad happens.
             // 
             function onFail(message) {
-                alert('Failed because: ' + message);
+                console.log('Failed because: ' + message);
             }
-/*            
-            function submitPhoto(){
-                http.open("post", "http://localhost:8080/submit", true);
-                
-                http.onreadystatechange =   function()
-                { 
-                    if(http.readyState  == 4)
-                    {
-                        if(http.status  == 200) {
-                            alert(http.responseText);
-                            alert("eReport Successfully sent to Server");
-                        } 
-                        
-                        
-                        //   alert("Received:"  + http.responseText); 
-                        else 
-                        alert("NOT SENT!!");
-                    }
-                }; 
-                
-                params = comment="+comment+"&photo="+pic;
-                
-                http.send(params);
-            }*/
-            </script>
-    <!-- Le styles -->
-    <link href="./css/bootstrap.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
-    <link href="./css/bootstrap-responsive.css" rel="stylesheet">
+            function submitPhoto() {
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
+
+
+                var xmlHttpReq = false;
+
+                var http = this;
+
+                // Mozilla/Safari
+
+                if (window.XMLHttpRequest) {
+
+                    http = new XMLHttpRequest();
+
+                }
+
+                // IE
+
+                else if (window.ActiveXObject) {
+
+                    http = new ActiveXObject("Microsoft.XMLHTTP");
+
+                }
+
+                http.open("POST", "http://192.168.0.104:8080/upload", true);
+
+                http.setRequestHeader('Content-Type','text/html');
+
+                http.onreadystatechange = function () {
+
+                    if (http.readyState == 4) {
+
+                        if (http.status == 200) {
+
+                            alert(http.responseText);
+
+                            alert("eReport Successfully sent to Server");
+
+                        }
+
+                        // alert("Received:"  + http.responseText); 
+
+                        else
+
+                            alert("NOT SENT!!");
+
+                    }
+
+                };
+
+               var comment = document.getElementById('inputComment').value;
+
+
+               document.getElementById('yorum1').value=comment;
+
+               document.getElementById('lat1').value=latitude;
+
+               document.getElementById('lon1').value=longitude;
+
+               document.getElementById('photo641').value=photo;
+
+               document.getElementById('submit1').click();
+               
+               
+               var params = "yorum=" + comment + "&lat=" + latitude + "&lon=" + longitude + "&photo64=" + photo;
+               
+                //http.send(params);
+
+
+            }
+
+            function doInitText() {
+                if(inputComment.value=="yaz...")
+                    inputComment.value = "";
+
+            }
+
+          
+            </script>
+<!-- Le styles -->
+<link href="./css/bootstrap.css" rel="stylesheet">
+<style>
+body {
+	padding-top: 60px;
+	/* 60px to make the container go all the way to the bottom of the topbar */
+}
+</style>
+<link href="./css/bootstrap-responsive.css" rel="stylesheet">
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le fav and touch icons -->
-  </head>
+<!-- Le fav and touch icons -->
+</head>
 
-  <body>
+<body>
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="#">Mutfagram</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active" ><a href="#capture" data-toggle="tab">Foto Çek</a></li>
-              <li><a href="#list" data-toggle="tab">Listele</a></li>
-              <li><a href="#maps" data-toggle="tab">Harita</a></li>
-			  <li><a href="#about" data-toggle="tab">Mutfak</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">Mutfagram</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active"><a href="#capture" data-toggle="tab">Foto
+								Çek</a></li>
+						<li><a href="#list" data-toggle="tab">Listele</a></li>
+						<li><a href="#maps" data-toggle="tab">Harita</a></li>
+						<li><a href="#about" data-toggle="tab">Mutfak</a></li>
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
+
+			</div>
+
+
+
+
+
+
+
+
+
+
 		</div>
-		
+	</div>
+
+	<div class="tab-content" id="myTab">
+		<div class="tab-pane active" id="capture">
+			<button class="btn btn-large btn-info	" onClick="capturePhoto()">çek</button>
+			<textarea type="text" class="input-xlarge" id="inputComment" rows="3"
+				onClick="doInitText()">yaz...</textarea>
+			<button class="btn btn-large btn-info	" onClick="submitPhoto()">yolla</button>
+
+			<ul class="thumbnails">
+				<li class="span3">
+					<div class="thumbnail">
+						<img id="picCaptured" src="" alt=""
+							style="width: 80%; height: 80%; display: none;">
+
+					</div>
+				</li>
+			</ul>
+
+		</div>
+		<div class="tab-pane" id="list">
 
 
 
-    
+
+			<div id="myCarousel" class="carousel slide">
+				<div class="carousel-inner">
+					<div class="item active">
+						<img
+							src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-01.jpg"
+							alt="">
+						<div class="carousel-caption">
+							<h4>First Thumbnail label</h4>
+							<p>Cras justo odio, dapibus ac facilisis in, egestas eget
+								quam. Donec id elit non mi porta gravida at eget metus. Nullam
+								id dolor id nibh ultricies vehicula ut id elit.</p>
+						</div>
+					</div>
+					<div class="item">
+						<img
+							src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-02.jpg"
+							alt="" style="">
+						<div class="carousel-caption">
+							<h4>Second Thumbnail label</h4>
+							<p>Cras justo odio, dapibus ac facilisis in, egestas eget
+								quam. Donec id elit non mi porta gravida at eget metus. Nullam
+								id dolor id nibh ultricies vehicula ut id elit.</p>
+						</div>
+					</div>
+					<div class="item">
+						<img
+							src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-03.jpg"
+							alt="" style="">
+						<div class="carousel-caption">
+							<h4>Third Thumbnail label</h4>
+							<p>Cras justo odio, dapibus ac facilisis in, egestas eget
+								quam. Donec id elit non mi porta gravida at eget metus. Nullam
+								id dolor id nibh ultricies vehicula ut id elit.</p>
+						</div>
+					</div>
+				</div>
+				<a class="left carousel-control" href="#myCarousel"
+					data-slide="prev">‹</a> <a class="right carousel-control"
+					href="#myCarousel" data-slide="next">›</a>
+			</div>
+
+
+		</div>
+		<div class="tab-pane" id="maps">
+			<div id="maps_canvas"></div>
+		</div>
+	</div>
+	<div class="tab-pane" id="about">about</div>
 	
-	
-	
-		
-		
-      </div>
-    </div>
 
-        <div class="tab-content" id="myTab">
-  <div class="tab-pane active" id="capture">
-<button class="btn btn-large btn-info	"  onClick="capturePhoto()">çek</button>
-		<textarea type="text" class="input-xlarge" id="inputComment" rows="3">yaz...</textarea>
-  
-  <button class="btn btn-large btn-info	" onClick="submitPhoto()">yolla</button>
-  
-  <ul class="thumbnails">
-  <li class="span3">
-    <div class="thumbnail" style="width: 80%; display:none;">
-      <img src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-03.jpg" alt="">
-     
-    </div>
-  </li>
-</ul>
-  
-  </div>
-  <div class="tab-pane" id="list">
-  
 
-  
-  
-  <div id="myCarousel" class="carousel slide">
-            <div class="carousel-inner">
-              <div class="item active">
-                <img src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-01.jpg" alt="">
-                <div class="carousel-caption">
-                  <h4>First Thumbnail label</h4>
-                  <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                </div>
-              </div>
-              <div class="item">
-                <img src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-02.jpg" alt="" style="">
-                <div class="carousel-caption">
-                  <h4>Second Thumbnail label</h4>
-                  <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                </div>
-              </div>
-              <div class="item">
-                <img src="http://twitter.github.com/bootstrap/assets/img/bootstrap-mdo-sfmoma-03.jpg" alt="" style="">
-                <div class="carousel-caption">
-                  <h4>Third Thumbnail label</h4>
-                  <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                </div>
-              </div>
-            </div>
-            <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-            <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
-          </div>
-  
-  
-  </div>
-  <div class="tab-pane" id="maps">maps</div>
-  <div class="tab-pane" id="about">about</div>
-</div>
-		
 
-    
 	<script src="./js/jquery.1.7.2.js"></script>
-<script src="./js/bootstrap.js"></script>
+	<script src="./js/bootstrap.js"></script>
 
 
-  </body>
+	<div style="display:none">
+	<form method="post" action="http://192.168.0.104:8080/upload">
+		<input name="yorum" value="" id="yorum1" type="text">
+		<input name="lat" value="" id="lat1" type="text">
+		<input name="lon" value="" id="lon1" type="text">
+		<input name="photo64" value="" id="photo641" type="text">
+		<input type="submit" id="submit1">
+	</form>
+	</div>
+</body>
 </html>
