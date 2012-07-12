@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Capture Photo</title>
+        
+        <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            
+            var pictureSource;   // picture source
+            var destinationType; // sets the format of returned value 
+            var latitude;
+            var longitude;
+            var photo;
+            
+            // Wait for PhoneGap to connect with the device
+            //
+            document.addEventListener("deviceready",onDeviceReady,false);
+            
+            // PhoneGap is ready to be used!
+            //
+            function onDeviceReady() {
+                pictureSource=navigator.camera.PictureSourceType;
+                destinationType=navigator.camera.DestinationType;
+                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError);
+            }
+            
+            function onLocationSuccess(position) {
+                latitude = position.coords.latitude;
+                longitude = position.coords.longitude;
+            }
+            
+            // onError Callback receives a PositionError object
+            //
+            function onLocationError(error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }
+            
+            // Called when a photo is successfully retrieved
+            //
+            function onPhotoDataSuccess(imageData) {
+                
+                photo = "data:image/jpeg;base64," + imageData;
+            }
+            
+            // A button will call this function
+            //
+            function capturePhoto() {
+                // Take picture using device camera and retrieve image as base64-encoded string
+                navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 40 });
+            }
+            
+            // Called if something bad happens.
+            // 
+            function onFail(message) {
+                alert('Failed because: ' + message);
+            }
+/*            
+            function submitPhoto(){
+                http.open("post", "http://localhost:8080/submit", true);
+                
+                http.onreadystatechange =   function()
+                { 
+                    if(http.readyState  == 4)
+                    {
+                        if(http.status  == 200) {
+                            alert(http.responseText);
+                            alert("eReport Successfully sent to Server");
+                        } 
+                        
+                        
+                        //   alert("Received:"  + http.responseText); 
+                        else 
+                        alert("NOT SENT!!");
+                    }
+                }; 
+                
+                params = comment="+comment+"&photo="+pic;
+                
+                http.send(params);
+            }*/
+            </script>
+    </head>
+    <body>
+        <button onclick="capturePhoto();">Capture Photo</button> <br>
+        <button onclick="submitPhoto();">Submit Photo</button><br>
+    </body>
+</html>
