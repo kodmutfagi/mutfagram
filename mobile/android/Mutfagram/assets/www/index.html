@@ -64,73 +64,14 @@
             }
             function submitPhoto() {
 
-
-
-                var xmlHttpReq = false;
-
-                var http = this;
-
-                // Mozilla/Safari
-
-                if (window.XMLHttpRequest) {
-
-                    http = new XMLHttpRequest();
-
-                }
-
-                // IE
-
-                else if (window.ActiveXObject) {
-
-                    http = new ActiveXObject("Microsoft.XMLHTTP");
-
-                }
-
-                http.open("POST", "http://192.168.0.104:8080/upload", true);
-
-                http.setRequestHeader('Content-Type','text/html');
-
-                http.onreadystatechange = function () {
-
-                    if (http.readyState == 4) {
-
-                        if (http.status == 200) {
-
-                            alert(http.responseText);
-
-                            alert("eReport Successfully sent to Server");
-
-                        }
-
-                        // alert("Received:"  + http.responseText); 
-
-                        else
-
-                            alert("NOT SENT!!");
-
-                    }
-
-                };
-
                var comment = document.getElementById('inputComment').value;
-
-
-               document.getElementById('yorum1').value=comment;
-
-               document.getElementById('lat1').value=latitude;
-
-               document.getElementById('lon1').value=longitude;
-
-               document.getElementById('photo641').value=photo;
-
-               document.getElementById('submit1').click();
-               
-               
-               var params = "yorum=" + comment + "&lat=" + latitude + "&lon=" + longitude + "&photo64=" + photo;
-               
-                //http.send(params);
-
-
+    
+               $.post("http://192.168.0.104:8080/upload",{yorum:comment,lat:latitude,lon:longitude,photo64:photo}, function() {
+            	      alert("success");
+            	    })
+            	    .success(function() { alert("second success"); })
+            	    .error(function() { alert("error"); })
+            	    .complete(function() { alert("complete"); });
             }
 
             function doInitText() {
@@ -270,16 +211,5 @@ body {
 
 	<script src="./js/jquery.1.7.2.js"></script>
 	<script src="./js/bootstrap.js"></script>
-
-
-	<div style="display:none">
-	<form method="post" action="http://192.168.0.104:8080/upload">
-		<input name="yorum" value="" id="yorum1" type="text">
-		<input name="lat" value="" id="lat1" type="text">
-		<input name="lon" value="" id="lon1" type="text">
-		<input name="photo64" value="" id="photo641" type="text">
-		<input type="submit" id="submit1">
-	</form>
-	</div>
 </body>
 </html>
