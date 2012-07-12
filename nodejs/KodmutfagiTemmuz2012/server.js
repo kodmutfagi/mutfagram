@@ -47,9 +47,9 @@ app.post('/upload', function(req, res, next) {
 	console.log('\n Form data (%s %s %s)', req.body.yorum, req.body.lon,
 			req.body.lat);
 
-	var write= function (fdata){
+	var write= function (fpath, fdata){
 
-		fs.writeFile(newPath, fdata, function(err) {
+		fs.writeFile(fpath, fdata, function(err) {
 			console.log("Error Writing " + err);
 			feedbackStore.saveImage(req.files.foto.name,
 					req.files.foto.path, function(errf, doc) {
@@ -79,10 +79,7 @@ app.post('/upload', function(req, res, next) {
 	if (req.body.photo64) {
 		var buffer = new Buffer(req.body.photo64, "base64");
 		var newPath = __dirname + "/uploads/" + ((new Date()).getTime()/1000);
-		fs.writeFile(newPath, buffer, function(err,fdata) {
-			write(fdata);
-		});
-		
+		write(newPath, buffer);
 
 	} else {
 		// file upload
@@ -90,7 +87,7 @@ app.post('/upload', function(req, res, next) {
 			console.log("READING FILE %s ", err);
 			var newPath = __dirname + "/uploads/" + req.files.foto.name;
 			console.log("Writing " + newPath);
-			write(data);
+			write(newPath, data);
 		});
 	}
 });
