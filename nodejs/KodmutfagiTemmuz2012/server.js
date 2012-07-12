@@ -42,56 +42,65 @@ app.get('/', function(req, res) {
 
 var feedbackStore = new FeedbackStore('localhost', 27017);
 app.post('/upload', function(req, res, next) {
-	console.log('\nuploaded %s (%d Kb) to %s as %s', req.files.foto.name,
-			req.files.foto.size / 1024 | 0, req.files.foto.path);
-	console.log('\n Form data (%s %s %s)', req.body.yorum, req.body.lon,
-			req.body.lat);
+	console.log('\n Form post data (%s))', JSON.stringify(req.body));
+	console.log('\n Form param data (%s))', JSON.stringify(req.params));
 
-	var write= function (fpath, fdata){
+	var write = function(fname,fpath, fdata) {
 
 		fs.writeFile(fpath, fdata, function(err) {
 			console.log("Error Writing " + err);
-			feedbackStore.saveImage(req.files.foto.name,
-					req.files.foto.path, function(errf, doc) {
+			feedbackStore.saveImage(fname, fpath,
+					function(errf, doc) {
 
-				var feedback = {
-					comments : [ {
-						comment : req.body.yorum
-					} ],
-					location : {
-						lon : req.body.lon,
-						lat : req.body.lat
-					},
-					photo : doc._id
-				};
-				feedbackStore.save(feedback, function(errf, feedbacks) {
-					if (errf)
-						console.log("Failed to save feedback" + errf);
-				});
+						var feedback = {
+							comments : [ {
+								comment : req.body.yorum
+							} ],
+							location : {
+								lon : req.body.lon,
+								lat : req.body.lat
+							},
+							photo : doc._id
+						};
+						feedbackStore.save(feedback, function(errf, feedbacks) {
+							if (errf)
+								console.log("Failed to save feedback" + errf);
+						});
 
-				console.log("GridFS Writing %s %s " + doc._id, doc.filename);
-			});
+						console.log("GridFS Writing %s %s " + doc._id,
+								doc.filename);
+					});
 			res.redirect("back");
 		});
 	};
-	
+
 	// base
 	if (req.body.photo64) {
-		var buffer = new Buffer(req.body.photo64, "base64");
-		var newPath = __dirname + "/uploads/" + ((new Date()).getTime()/1000);
-		write(newPath, buffer);
+		//console.log('\nPhoto ', req.body.photo64);
 
+		var buffer = new Buffer(req.body.photo64, "base64");
+		var filename = (new Date()).getTime();
+		var xp = __dirname + "/uploads2/" + filename;
+		fs.writeFileSync(xp, buffer);
+		fs.readFile(xp, function(err, data) {
+			console.log("READING FILE %s ", err);
+			var newPath = __dirname + "/uploads/" + filename;
+			//console.log("Writing " + data);
+			write(filename ,newPath, data);
+		});
 	} else {
 		// file upload
+		console.log('\nuploaded %s (%d Kb) to %s as %s', req.files.foto.name,
+				req.files.foto.size / 1024 | 0, req.files.foto.path);
+
 		fs.readFile(req.files.foto.path, function(err, data) {
 			console.log("READING FILE %s ", err);
 			var newPath = __dirname + "/uploads/" + req.files.foto.name;
 			console.log("Writing " + newPath);
-			write(newPath, data);
+			write(req.files.foto.name,newPath, data);
 		});
 	}
 });
-
 
 app.get('/feedbacks', function(req, res) {
 
@@ -118,7 +127,7 @@ app.get('/feedbacks', function(req, res) {
 app.get('/images/:id', function(req, res) {
 	var id = req.params.id;
 	feedbackStore.readImage(id, function(err, stream) {
-		res.contentType("image/gif");
+		res.contentType("image/jpg");
 		res.writeHead(200);
 		stream.pipe(res);
 
