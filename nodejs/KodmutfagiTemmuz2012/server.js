@@ -60,12 +60,12 @@ app.post('/upload', function(req, res, next) {
 		photo : ""
 	};
 
-	// base
+	// Image Uploaded as base64 encoded data
 	if (req.body.photo64) {
 		var buffer = new Buffer(req.body.photo64, "base64");
 		var tmpFileName = (new Date()).getTime();
 		feedbackStore.saveImageBuffer(tmpFileName, buffer, function(errf, doc) {
-
+			feedback.photo = doc._id;
 			feedbackStore.save(feedback, function(errf, feedbacks) {
 				if (errf)
 					console.log("Failed to save feedback" + errf);
@@ -78,7 +78,7 @@ app.post('/upload', function(req, res, next) {
 		// saveTempFile(newPath,buffer, function(e){});
 
 	} else {
-		// file upload
+		// Image File Uploaded as a multi-part form
 		fs.readFile(req.files.foto.path, function(err, data) {
 			feedbackStore.saveImage(req.files.foto.name, req.files.foto.path, function(errf, doc) {
 				feedback.photo = doc._id;
