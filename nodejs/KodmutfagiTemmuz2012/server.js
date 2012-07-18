@@ -1,6 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var FeedbackStore = require('./feedback.js').FeedbackStore;
+Buffer = require('buffer').Buffer;
 
 var app = express.createServer();
 
@@ -41,6 +42,7 @@ app.get('/', function(req, res) {
 });
 
 var feedbackStore = new FeedbackStore('localhost', 27017);
+<<<<<<< HEAD
 app.post('/upload', function(req, res) {
 	console.log('\n Form post data (%s))', JSON.stringify(req.body));
 	console.log('\n Form param data (%s))', JSON.stringify(req.params));
@@ -72,11 +74,46 @@ app.post('/upload', function(req, res) {
 					});
 			res.redirect("back");
 		});
+=======
+
+app.post('/upload', function(req, res, next) {
+
+	// Debug request
+	console.log('\nuploaded %s (%d Kb) to %s as %s', req.files.foto.name, req.files.foto.size / 1024 | 0, req.files.foto.path);
+	console.log('\n Form data (%s %s %s)', req.body.yorum, req.body.lon, req.body.lat);
+	// END debug
+	var feedback = {
+		comments : [ {
+			comment : req.body.yorum
+		} ],
+		location : {
+			lon : req.body.lon,
+			lat : req.body.lat
+		},
+		photo : ""
+>>>>>>> Some fixes and cleanup
 	};
 
 	// base
 	if (req.body.photo64) {
+<<<<<<< HEAD
 		//console.log('\nPhoto ', req.body.photo64);
+=======
+		var buffer = new Buffer(req.body.photo64, "base64");
+		var tmpFileName = (new Date()).getTime();
+		feedbackStore.saveImageBuffer(tmpFileName, buffer, function(errf, doc) {
+
+			feedbackStore.save(feedback, function(errf, feedbacks) {
+				if (errf)
+					console.log("Failed to save feedback" + errf);
+			});
+
+			console.log("GridFS Buffer Writing %s %s " , doc._id, doc.filename);
+		});
+		// DEBUG SAVE FILE TO LOCAL DISK
+		// var newPath = __dirname + "/tmp/" + (new Date()).getTime();
+		// saveTempFile(newPath,buffer, function(e){});
+>>>>>>> Some fixes and cleanup
 
 		var buffer = new Buffer(req.body.photo64, "base64");
 		var filename = (new Date()).getTime();
@@ -94,14 +131,42 @@ app.post('/upload', function(req, res) {
 				req.files.foto.size / 1024 | 0, req.files.foto.path);
 
 		fs.readFile(req.files.foto.path, function(err, data) {
+<<<<<<< HEAD
 			console.log("READING FILE %s ", err);
 			var newPath = __dirname + "/uploads/" + req.files.foto.name;
 			console.log("Writing " + newPath);
 			write(req.files.foto.name,newPath, data);
+=======
+			feedbackStore.saveImage(req.files.foto.name, req.files.foto.path, function(errf, doc) {
+				feedback.photo = doc._id;
+				feedbackStore.save(feedback, function(errf, feedbacks) {
+					if (errf)
+						console.log("Failed to save feedback" + errf);
+
+					console.log("Feedback/GridFS saved  %s %s" , doc._id, doc.filename);
+
+				});
+			});
+
+			// DEBUG SAVE FILE TO LOCAL DISK
+			// var newPath = __dirname + "/tmp/" + req.files.foto.name;
+			// saveTempFile(newPath,data, function(e){});
+
+>>>>>>> Some fixes and cleanup
 		});
 	}
+	res.redirect("back");
+
 });
 
+<<<<<<< HEAD
+=======
+var saveTempFile = function(fpath, fdata, callback) {
+	console.log("Writing " + newPath);
+	fs.writeFile(fpath, fdata, callback);
+};
+
+>>>>>>> Some fixes and cleanup
 app.get('/feedbacks', function(req, res) {
 
 	feedbackStore.findAll(function(errf, feedbacks) {
@@ -127,12 +192,16 @@ app.get('/feedbacks', function(req, res) {
 app.get('/images/:id', function(req, res) {
 	var id = req.params.id;
 	feedbackStore.readImage(id, function(err, stream) {
+<<<<<<< HEAD
 		res.contentType("image/jpg");
+=======
+		res.contentType("image/jpeg");
+>>>>>>> Some fixes and cleanup
 		res.writeHead(200);
 		stream.pipe(res);
 
 	});
 });
 
-app.listen(process.env.PORT || 8080);
-console.log("Serving at http://localhost:%s/", process.env.PORT || 8080);
+app.listen(process.env.PORT || 8888);
+console.log("Serving at http://localhost:%s/", process.env.PORT || 8888);

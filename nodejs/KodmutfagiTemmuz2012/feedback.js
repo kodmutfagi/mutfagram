@@ -48,8 +48,7 @@ FeedbackStore.prototype.findById = function(id, callback) {
 			callback(error)
 		else {
 			feedback_collection.findOne({
-				_id : feedback_collection.db.bson_serializer.ObjectID
-						.createFromHexString(id)
+				_id : feedback_collection.db.bson_serializer.ObjectID.createFromHexString(id)
 			}, function(error, result) {
 				if (error)
 					callback(error)
@@ -63,7 +62,7 @@ FeedbackStore.prototype.findById = function(id, callback) {
 FeedbackStore.prototype.save = function(feedbacks, callback) {
 	this.getCollection(function(error, feedback_collection) {
 		if (error)
-			callback(error)
+			callback(error);
 		else {
 			if (typeof (feedbacks.length) == "undefined")
 				feedbacks = [ feedbacks ];
@@ -89,31 +88,34 @@ FeedbackStore.prototype.save = function(feedbacks, callback) {
 FeedbackStore.prototype.saveImage = function(filename, filepath, callback) {
 
 	var gridStoreWrite = new GridStore(this.db, new ObjectID(), filename, "w", {
-		chunkSize : 1024
+		"chunk_size" : 1024 * 4
 	});
 	gridStoreWrite.writeFile(filepath, callback);
 
 };
 
-FeedbackStore.prototype.readImage = function (id, callback){
-	var gridStoreRead = new GridStore(this.db, new ObjectID(id) ,"r");
-	gridStoreRead.open(function(err,gridStoreRead){
-		console.log("gridstoreread error"+err);
-		var stream=gridStoreRead.stream(true);
+FeedbackStore.prototype.readImage = function(id, callback) {
+	var gridStoreRead = new GridStore(this.db, new ObjectID(id), "r");
+	gridStoreRead.open(function(err, gridStoreRead) {
+		console.log("gridstoreread error" + err);
+		var stream = gridStoreRead.stream(true);
 		callback(null, stream);
 	});
-	
+
 };
 
-FeedbackStore.prototype.saveImageBuffer = function(buffer, callback) {
+FeedbackStore.prototype.saveImageBuffer = function(filename, buffer, callback) {
 
-	var gridStoreWrite = new GridStore(this.db, new ObjectID(),  "w", {
-		"chunk_size" : 1024*4
+	var gridStoreWrite = new GridStore(this.db, new ObjectID(), "w", {
+		"chunk_size" : 1024 * 4
 	});
-	gridStoreWrite.write(buffer, callback);
+	gridStoreWrite.open(function(err, gs) {
+		gs.write(buffer, true,function(e, data) {
+			gridStoreWrite.close(function(ec, cdata) {});
+			callback(e, data);
+		});
+	});
 
 };
-
-
 
 exports.FeedbackStore = FeedbackStore;
